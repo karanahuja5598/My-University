@@ -46,7 +46,6 @@ should be able to easily translate it into a collection of test suites.
 For each specialization, you must list specific checkpoints that are relevant to that particular specialization.
 
 - Demonstrate ability to access Blackboard API
-- Demonstrate ability to access Piazza API
 - Store any pulled data from APIs into MongoDB database
 - Pull data from database and represent it as a dynamically updated web view
 - Have a test suite for making sure database can perform CRUD operations
@@ -61,7 +60,9 @@ For each specialization, you must list specific checkpoints that are relevant to
 - User should be able to filter out data as desired
 - User should be able to add "notifications" to a calendar, allowing for easy planning
 - There should be warnings if app can tell if a due date is coming up soon
+- Demonstrate ability to access Piazza API
 - Attempt at scraping Gradescope data
+- Show grading info for each course
 
 ## Deliverables for final project
 
