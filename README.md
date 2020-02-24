@@ -58,6 +58,11 @@ until checkpoint 2, but failing to plan is planning to fail.
 
 For each specialization, you must list specific checkpoints that are relevant to that particular specialization.
 
+- User should be able to filter out data as desired
+- User should be able to add "notifications" to a calendar, allowing for easy planning
+- There should be warnings if app can tell if a due date is coming up soon
+- Attempt at scraping Gradescope data
+
 ## Deliverables for final project
 
 Outline in English what the deliverables will be for the final checkpoint. This will should be
@@ -67,10 +72,16 @@ planning to fail.
 
 For each specialization, you must list specific checkpoints that are relevant to that particular specialization.
 
+- User should be able to add their own notifications/notes
+- User should be able to set up reminders and alarms for calendar events
+- User should be able to see previews of any files attached to notifications
+
 ## Specialization deliverables
 
 For each student/team adding a specialization, name that specialization and describe what
 functionality you will be adding.
+
+We are not specialized students.
 
 # Installation
 
