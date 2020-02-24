@@ -7,7 +7,7 @@ University of Illinois School Notifier
 Students often have to reach out to many different sources to get information about their assignments,
 lecture notes, and instructor assignments. It can be hard keeping track of all of this information from
 multiple different sources. The goal of this app is to attempt to provide a single point of access
-for all of your UIC notification needs. This app will gather information from Blackboard and Piazza initially,
+for all of your notification needs. This app will gather information from Blackboard and Piazza initially,
 and if feasible will try to expand to also include Gradescope. <br />
 
 It will also have a calendar, allowing you to see notifications in the order that they appear.
@@ -35,7 +35,7 @@ school activities.
 
 - User should be able to filter out data as desired
 - User should be able to view notifications on a calendar, seeing when they were recieved
-- Demonstrate ability to access Piazza API
+- Demonstrate ability to access unofficial Piazza API
 - Attempt at scraping Gradescope data
 - Show grading info for each course
 
