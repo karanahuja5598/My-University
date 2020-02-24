@@ -2,6 +2,8 @@
 
 University of Illinois School Notifier
 
+Note: The test descriptions can be found under test/integration.js
+
 ## Description
 
 Students often have to reach out to many different sources to get information about their assignments,
