@@ -1,7 +1,8 @@
-# {{TEAMNAME}} Final Project
+# {{TEAMNAME}} Dumb Students Final Project
 
 TODO: Fill out this file with the following information
 
+UIC School Notifier
 
 ## Description
 
@@ -10,6 +11,12 @@ audience. Pretend this is the real `README.md` for your app that will show up on
 want people to know about it? What does it do? Why should they use it/check it out/hack on it? This
 should be approximately two paragraphs. Take a look at the description of your favorite software
 repository for inspiration.
+
+UIC students often have to reach out to many different sources to get information about their assignments,
+lecture notes, and instructor assignments. It can be hard keeping track of all of this information from
+multiple different sources. The goal of this app is to attempt to provide a single point of access
+for all of your UIC notification needs. This app will gather information from Blackboard and Piazza initially,
+and if feasible will try to expand to also include Gradescope.
 
 ## Authors
 
@@ -24,6 +31,11 @@ For instance:
 | Ned the Novice | web programming novice | |
 | Isaac the Intermediate | Took IT 202, built something in php once | I want to learn about website performance so I will be adding performance tests and keeping a performance log. |
 | Edith the Expert | Interned as a web dev for the last 2 semesters | I will containerize the app and configure it to run within Kubernetes, integrate it with a CI/CD platform so that the deployed version is updated once all tests pass, and I will run a load test with several synthetic long-session users to demonstrate rolling updates to the code. |
+
+| Member | Web dev level | Specialization |
+| --- | --- | --- |
+| Aashish Agrawal | web programming novice | |
+| Karan Ahuja | web programming novice | |
 
 ## Deliverables for checkpoint 2
 
