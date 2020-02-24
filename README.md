@@ -1,8 +1,6 @@
-# {{TEAMNAME}} Dumb Students Final Project
+# Dumb Students Final Project
 
-TODO: Fill out this file with the following information
-
-UIC School Notifier
+University of Illinois School Notifier
 
 ## Description
 
@@ -12,11 +10,19 @@ want people to know about it? What does it do? Why should they use it/check it o
 should be approximately two paragraphs. Take a look at the description of your favorite software
 repository for inspiration.
 
-UIC students often have to reach out to many different sources to get information about their assignments,
+Students often have to reach out to many different sources to get information about their assignments,
 lecture notes, and instructor assignments. It can be hard keeping track of all of this information from
 multiple different sources. The goal of this app is to attempt to provide a single point of access
 for all of your UIC notification needs. This app will gather information from Blackboard and Piazza initially,
-and if feasible will try to expand to also include Gradescope.
+and if feasible will try to expand to also include Gradescope. <br />
+
+It will also have a calendar, allowing you to see notifications in the order that they appear.
+If available, it will access grading info so that you can see how you are faring in each of your classes.
+We will also make it so that you can add your own notifications and notes.
+This application will hopefully allow you to gather all the information you need for your day-to-day
+school activities.
+
+
 
 ## Authors
 
