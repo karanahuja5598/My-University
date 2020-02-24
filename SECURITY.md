@@ -1,8 +1,5 @@
 # Security Analysis
 
-Describe the security considerations you will take when building your app in this file. This should
-include both a threat assessment and a planned defense strategy.
-
 The main concerns of our app is that people could gain access to the grading information
 of other students, or gain login information (which they could potentially use to compromise the user
 in other websites).
