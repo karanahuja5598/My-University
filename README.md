@@ -45,6 +45,12 @@ should be able to easily translate it into a collection of test suites.
 
 For each specialization, you must list specific checkpoints that are relevant to that particular specialization.
 
+- Demonstrate ability to access Blackboard API
+- Demonstrate ability to access Piazza API
+- Store any pulled data from APIs into MongoDB database
+- Pull data from database and represent it as a dynamically updated web view
+- Have a test suite for making sure database can perform CRUD operations
+
 ## Deliverables for checkpoint 4
 
 Outline in English what the deliverables will be for checkpoint 4. Reminder that this is not *due*
