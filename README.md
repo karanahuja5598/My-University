@@ -27,17 +27,17 @@ school activities.
 
 ## Deliverables for checkpoint 2
 
-- Demonstrate ability to access Blackboard API
+- Demonstrate ability to access unofficial Piazza API
 - Store any pulled data from APIs into MongoDB database
-- Make sure data is validated
 - Pull data from database and represent it as a dynamically updated web view
 - Have a test suite for making sure database can perform CRUD operations
 
 ## Deliverables for checkpoint 4
 
+- Make sure data is validated
 - User should be able to filter out data as desired
 - User should be able to view notifications on a calendar, seeing when they were recieved
-- Demonstrate ability to access unofficial Piazza API
+- Demonstrate ability to access Blackboard API
 - Attempt at scraping Gradescope data
 - Show grading info for each course
 
