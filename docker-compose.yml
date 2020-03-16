@@ -1,0 +1,16 @@
+version: "3"
+services:
+    web:
+        restart: "always"
+        image: "web-part"
+        working_dir: /home/node/app
+        environment:
+            - NODE_ENV=production
+        ports:
+            - "3000:3000"
+        command: "npm start"
+    mongo:
+        image: "mongo"
+        ports:
+            - "27017:27017"
+        
