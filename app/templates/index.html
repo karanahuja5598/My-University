@@ -1,23 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Enter Piazza Login</h1>
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}<br>
-            {% for error in form.username.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}<br>
-            {% for error in form.password.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>{{ form.submit() }}</p>
-    </form>
+    {% if loggedIn %}
+        <h1>Welcome to the UIC School Notifier, {{ user['username'] }}</h1>
+        <a href="/piazza"><button>See Piazza Posts</button></a>
+        <a href="/registerPiazza"><button>Register Piazza Info</button></a>
+    {% else %}
+        <h1> Welcome to the UIC School Notifier, please log in or register.</h1>
+    {% endif %}
 {% endblock %}
