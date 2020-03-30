@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Piazza Info</h1>
+    {% for post in posts %}
+        <h3>Post Title: {{ post['subject'] }}</h3>
+        <h4>Post Content:</h4>
+        {{ post['content']|safe }}
+    {% endfor %}
+{% endblock %}
