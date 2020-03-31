@@ -55,3 +55,8 @@ We are not specialized students.
 
 By the time you get to the end of the final project, this section should have a full set of
 instructions for how to spin up your app.
+
+To spin up our app, first run (docker-compose up --build) on the terminal and then go to (localhost:5000) to see the app.
+
+To run the test cases, first run (docker-compose up --build) on one terminal window and then on another terminal window run 
+(docker exec my_uni python -m unittest discover) to see the test cases run.
