@@ -5,3 +5,5 @@ class Config(object):
 
     # the mongo uri to connect from within the docker container
     MONGO_URI = 'mongodb://mongodb:27017/'
+
+    WTF_CSRF_ENABLED = False
