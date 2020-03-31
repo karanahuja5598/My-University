@@ -45,7 +45,10 @@ class FlaskAppTests(unittest.TestCase):
 
     def test_login_auth(self):
         result = self.app.post('/login', data = {"username" : "ag", "password" : "ag"}, follow_redirects=True)
-        exists = result.data.find("Sign In".encode()) != -1
+        exists = result.data.find("Welcome to the UIC School Notifier, ag".encode()) != -1
         self.assertEqual(exists, True)
+
+    def test_(self):
+
 
     
