@@ -32,6 +32,14 @@ school activities.
 - Pull data from database and represent it as a dynamically updated web view
 - Have a test suite for making sure database can perform CRUD operations
 
+## Deliverables for checkpoint 3
+- Inside app/test_app.py
+- Test Cases that passed:
+  - test_index_unauth
+  - test_login_unauth
+  - test_register_unauth
+  - test_login_auth
+
 ## Deliverables for checkpoint 4
 
 - Make sure data is validated
@@ -55,3 +63,8 @@ We are not specialized students.
 
 By the time you get to the end of the final project, this section should have a full set of
 instructions for how to spin up your app.
+
+To spin up our app, first run (docker-compose up --build) on the terminal and then go to (localhost:5000) to see the app.
+
+To run the test cases, first run (docker-compose up --build) on one terminal window and then on another terminal window run 
+(docker exec my_uni python -m unittest discover) to see the test cases run.
