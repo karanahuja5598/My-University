@@ -1,4 +1,4 @@
-<# Dumb Students Final Project
+## Dumb Students Final Project
 
 University of Illinois School Notifier
 
