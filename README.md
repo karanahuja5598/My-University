@@ -34,12 +34,12 @@ school activities.
 
 ## Deliverables for checkpoint 3
 - Inside app/test_app.py
-- Test Cases that passed for Piaaza:
+- Test Cases that passed for our App:
   - test_index_unauth
   - test_login_unauth
   - test_register_unauth
   - test_register_auth
-  - test_login_auth
+  - test_register_login_auth
 
 ## Deliverables for checkpoint 4
 
@@ -50,12 +50,20 @@ school activities.
 - Attempt at scraping Blackboard data
 - Show grading info for each course
 - Test Cases for Checkpoint 4 in app/test_app.py:
-  - To test Gradescope, the first test case would be to update credentials in the database
-  - Then the next testcase would be to see if we are able to navigate to other classes after logging in
-  - Another test case would be to pull data from a specific class like the name of the class
-  - Finally, the final test case would be to see all of the assignments from one class
+  - To test Gradescope, the first test case would be to update credentials in the database. The test case is called
+    test_register_gradescope_auth
+  - Another test case would be to pull data from a specific class like the name of the class. The test case is called 
+    test_className_gradescope_auth
+  - Finally, the final test case would be to see all of the assignments from one class. The test case is called     
+    test_contents_gradescope_auth
   - 
-  - To further test Piaaza,
+  - To test Piaaza, we would test to see if we are able to register within the app to login to Piaaza. The test case is called
+    test_register_piazza_auth
+  - Another test for Piaaza would be is to actually get the contents from the posts within Piaaza. The test case is called 
+    test_contents_piazza_auth
+  -
+  - To further test the app, we would test to see if a username is already registered, that username should not be able to
+    register again. The test case is called test_double_register_auth
 
 ## Deliverables for final project
 
