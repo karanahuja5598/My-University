@@ -34,10 +34,11 @@ school activities.
 
 ## Deliverables for checkpoint 3
 - Inside app/test_app.py
-- Test Cases that passed:
+- Test Cases that passed for Piaaza:
   - test_index_unauth
   - test_login_unauth
   - test_register_unauth
+  - test_register_auth
   - test_login_auth
 
 ## Deliverables for checkpoint 4
@@ -45,9 +46,16 @@ school activities.
 - Make sure data is validated
 - User should be able to filter out data as desired
 - User should be able to view notifications on a calendar, seeing when they were recieved
-- Demonstrate ability to access Blackboard API
-- Attempt at scraping Gradescope data
+- Demonstrate ability to access Gradescope
+- Attempt at scraping Blackboard data
 - Show grading info for each course
+- Test Cases for Checkpoint 4 in app/test_app.py:
+  - To test Gradescope, the first test case would be to update credentials in the database
+  - Then the next testcase would be to see if we are able to navigate to other classes after logging in
+  - Another test case would be to pull data from a specific class like the name of the class
+  - Finally, the final test case would be to see all of the assignments from one class
+  - 
+  - To further test Piaaza,
 
 ## Deliverables for final project
 
