@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if loggedIn %}
+        <h1>Welcome to the UIC School Notifier, {{ user['username'] }}</h1>
+        <a href="/piazza"><button>See Piazza Posts</button></a>
+        <a href="/registerPiazza"><button>Register Piazza Info</button></a>
+    {% else %}
+        <h1> Welcome to the UIC School Notifier, please log in or register.</h1>
+    {% endif %}
+{% endblock %}
