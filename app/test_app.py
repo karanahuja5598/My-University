@@ -39,16 +39,25 @@ class FlaskAppTests(unittest.TestCase):
         self.assertEqual(exists, True)
 
     def test_register_auth(self):
-        result = self.app.post('/register', data = {"username" : "ag", "password" : "ag"}, follow_redirects=True)
+        result = self.app.post('/register', data = {"username" : "agf", "password" : "agf"}, follow_redirects=True)
         exists = result.data.find("Sign In".encode()) != -1
         self.assertEqual(exists, True)
 
     def test_login_auth(self):
-        result = self.app.post('/login', data = {"username" : "ag", "password" : "ag"}, follow_redirects=True)
-        exists = result.data.find("Welcome to the UIC School Notifier, ag".encode()) != -1
+        result = self.app.post('/login', data = {"username" : "agf", "password" : "agf"}, follow_redirects=True)
+        exists = result.data.find("Welcome to the UIC School Notifier, agf".encode()) != -1
         self.assertEqual(exists, True)
 
-    def test_(self):
+    def test_register_piazza_auth(self):
+        pass
 
+    def test_contents_piazza_auth(self):
+        pass
+
+    def test_register_gradescope_auth(self):
+        pass
+
+    def test_contents_gradescope_auth(self):
+        pass
 
     
