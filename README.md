@@ -32,6 +32,14 @@ school activities.
 - Pull data from database and represent it as a dynamically updated web view
 - Have a test suite for making sure database can perform CRUD operations
 
+## Deliverables for checkpoint 3
+- Inside app/test_app.py
+- Test Cases that passed:
+  - test_index_unauth
+  - test_login_unauth
+  - test_register_unauth
+  - test_login_auth
+
 ## Deliverables for checkpoint 4
 
 - Make sure data is validated
