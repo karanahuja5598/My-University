@@ -10,7 +10,24 @@ services:
     depends_on:
       - mongodb
     container_name: my_uni
+
   mongodb:
     image: mongo
     ports:
       - 27017:27017
+
+  hub:
+    restart: always
+    image: selenium/hub:3.141.59-20200409
+    ports:
+      - "4444:4444"
+
+  chrome:
+    image: selenium/node-chrome:3.141.59-20200409
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - hub
+    environment:
+      - HUB_HOST=hub
+      - HUB_PORT=4444

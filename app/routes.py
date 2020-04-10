@@ -2,6 +2,7 @@ from flask import render_template, flash, redirect, url_for, session
 from app import app
 import app.forms as forms
 from piazza import getPiazzaInfo
+from gradescope import getGradescopeInfo
 
 # set up pymongo
 from flask_pymongo import PyMongo
@@ -10,6 +11,7 @@ mongo = PyMongo(app)
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
+    #temp = getGradescopeInfo("blahblah@uic.edu","blahblah")
     if("user" in session):
         if(session["user"]["username-Piazza"] != ""):
             return render_template('index.html', title='Home', loggedIn = True, piazza = True, user = session["user"])
