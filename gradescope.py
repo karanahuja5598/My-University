@@ -51,6 +51,10 @@ def getGradescopeInfo(username, password):
     courseLinks = []
     for i in courseList:
         courseLinks.append(url[:-1] + i.get('href'))
+
+    courseNames = []
+    for course in courseList:
+        courseNames.append(course.find("h3").text)
     
     frames = []
     for x in courseLinks:
@@ -58,8 +62,17 @@ def getGradescopeInfo(username, password):
         soup1 = BeautifulSoup(driver.page_source, 'html.parser')
         tbl = soup1.find('table',{"id":"assignments-student-table"})
         frames.append(pd.read_html(str(tbl))[0])
+
+    gradescopeInfo = []
+
+    for i in range(len(courseNames)):
+        courseDict = {}
+        courseDict["subject"] = courseNames[i]
+        courseDict["content"] = frames[i].to_html()
+        gradescopeInfo.append(courseDict)
+
     
-    print(frames)
+    #print(frames)
 
     #logUsrPass = driver.find_element_by_xpath('/html/body/div[1]/dialog/div/div[1]/form/div[4]/input')
     #logUsrPass = driver.find_element_by_name('commit')
@@ -74,4 +87,4 @@ def getGradescopeInfo(username, password):
         #print(elem.get_attribute("href"))    
 
     driver.quit()
-    return "bye"
+    return gradescopeInfo

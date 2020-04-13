@@ -13,7 +13,7 @@ mongo = PyMongo(app)
 def index():
     #temp = getGradescopeInfo("blahblah@uic.edu","blahblah")
     if("user" in session):
-        if(session["user"]["username-Piazza"] != ""):
+        if("username-Piazza" in session["user"] and session["user"]["username-Piazza"] != ""):
             return render_template('index.html', title='Home', loggedIn = True, piazza = True, user = session["user"])
         return render_template('index.html', title='Home', loggedIn = True, user = session["user"])
     return render_template('index.html', title='Home')
@@ -35,6 +35,8 @@ def login():
         userInfo["username"] = user["username"]
         userInfo["username-Piazza"] = user["username-Piazza"]
         userInfo["password-Piazza"] = user["password-Piazza"]
+        userInfo["username-Gradescope"] = user["username-Gradescope"]
+        userInfo["password-Gradescope"] = user["password-Gradescope"]
         session["user"] = userInfo
         return redirect(url_for('index'))
     return render_template('login.html', title='Sign In', form=form)
@@ -57,7 +59,7 @@ def register():
 
 @app.route('/registerPiazza', methods=['GET', 'POST'])
 def registerPiazza():
-    form = forms.PiazzaForm()
+    form = forms.LoginForm()
     if form.validate_on_submit():
         userDB = mongo.cx["userDB"]
         userCollection = userDB["userCollection"]
@@ -83,3 +85,32 @@ def registerPiazza():
 def piazza():
     piazzaInfo = getPiazzaInfo(session["user"]["username-Piazza"], session["user"]["password-Piazza"])
     return render_template('piazza.html', title='Register', posts = piazzaInfo)
+
+@app.route('/registerGradescope', methods=['GET', 'POST'])
+def registerGradescope():
+    form = forms.LoginForm()
+    if form.validate_on_submit():
+        userDB = mongo.cx["userDB"]
+        userCollection = userDB["userCollection"]
+        userCollection.update(
+            { "username" : session["user"]["username"] },
+                { "$set" : 
+                    {
+                        "username-Gradescope" : form.username.data,
+                        "password-Gradescope" : form.password.data
+                    }
+                }
+        )
+        user = userCollection.find_one({ "username" : session["user"]["username"] })
+        userInfo = {}
+        userInfo["username"] = user["username"]
+        userInfo["username-Gradescope"] = user["username-Gradescope"]
+        userInfo["password-Gradescope"] = user["password-Gradescope"]
+        session["user"] = userInfo
+        return redirect(url_for('index'))
+    return render_template('registerGradescope.html', title='Register', form=form)
+
+@app.route('/gradescope', methods=['GET', 'POST'])
+def gradescope():
+    gradescopeInfo = getGradescopeInfo(session["user"]["username-Gradescope"], session["user"]["password-Gradescope"])
+    return render_template('gradescope.html', title='Register', posts = gradescopeInfo)
