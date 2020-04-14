@@ -45,31 +45,27 @@ school activities.
 
 - Make sure data is validated
 - User should be able to filter out data as desired
-- User should be able to view notifications on a calendar, seeing when they were recieved
 - Demonstrate ability to access Gradescope
 - Attempt at scraping Blackboard data
-- Show grading info for each course
-- Test Cases for Checkpoint 4 in app/test_app.py:
-  - To test Gradescope, the first test case would be to update credentials in the database. The test case is called
-    test_register_gradescope_auth
-  - Another test case would be to pull data from a specific class like the name of the class. The test case is called 
-    test_className_gradescope_auth
-  - Finally, the final test case would be to see all of the assignments from one class. The test case is called     
-    test_contents_gradescope_auth
-  - 
-  - To test Piaaza, we would test to see if we are able to register within the app to login to Piaaza. The test case is called
-    test_register_piazza_auth
-  - Another test for Piaaza would be is to actually get the contents from the posts within Piaaza. The test case is called 
-    test_contents_piazza_auth
-  -
-  - To further test the app, we would test to see if a username is already registered, that username should not be able to
-    register again. The test case is called test_double_register_auth
+- Show grading info for each course from Gradescope
+- Inside app/test_app.py
+- Test Cases that passed for our App:
+   - test_register_piazza_auth
+   - test_contents_piazza_auth
+   - test_register_gradescope_auth
+   - test_contents_gradescope_auth
+   - test_className_gradescope_auth
 
-## Deliverables for final project
-
-- User should be able to add their own notifications/notes, making changes as needed
-- User should be able to set up reminders and alarms for calendar events
-- User should be able to see previews of some types of files attached to notifications
+## Deliverables for Checkpoint 5
+- Specific Deliverables for Checkpoint 5
+  - Will establish a fully implemented scraper for Blackboard
+  - Have a fully completed test suite for the app
+  - Make the app more appealing by adding templates that make it more colorful
+  - Try to deploy it to an actual site rather than running the container each time
+- Final Test List located in app/test_app.py
+  - The tests will be more focused towards Blackboard as that is the last thing that is left to be implemented
+  - The first test will be testing if the credentials for logging in to Blackboard work properly, this test case is called     test_register_blackboard_auth
+  - The second test will be testing to see if the list of recent activity from Blackboard can be accessed properly, this test case is called test_contents_blackboard_auth
 
 ## Specialization deliverables
 
