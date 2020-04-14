@@ -13,22 +13,21 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
+import time
 
 
+def getBlackboardInfo(username, password):
+    EMAIL = username
+    PASSWORD = password
 
+    url = "https://uic.blackboard.com/?new_loc=%2Fultra%2Finstitution-page%2Feffective"
 
-
-EMAIL = ""
-PASSWORD = ""
-currentSem = "Spring 2020"
-
-url = "https://uic.blackboard.com/?new_loc=%2Fultra%2Finstitution-page%2Feffective"
-
-def main():
-    driver = webdriver.Chrome()
+    #driver = webdriver.Chrome()
+    driver = webdriver.Remote(command_executor='http://hub:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
 
 
     driver.implicitly_wait(30)
@@ -50,51 +49,31 @@ def main():
     pword.send_keys(Keys.RETURN)
 
     driver.get('https://uic.blackboard.com/ultra/stream')
+
+    time.sleep(4)
     
-    #soup = BeautifulSoup(driver.page_source, 'html.parser')
-  
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+    streams = soup.find(id="activity-stream").findAll('div', recursive=False)
+    notes = streams[0].find('h2')
+    for stream in streams:
+        if stream.find('h2').text == "Recent":
+            notes = stream
+
+    info = []
+    for note in notes.findAll('div'):
+        info.append(note.text)
+
+    blackboardInfo = []
+    #learned how to filter out empty strings from geeksforgeeks.org
+    for item in info:
+        note = {}
+        note["content"] = list(filter(None, item.strip().splitlines()))
+        if(len(note["content"]) > 2):
+            blackboardInfo.append(note)
     
-
-    #upcoming = driver.find_element_by_xpath('/html/body/div[1]/div[2]/bb-base-layout/div/main/div/div/div[1]/div[1]/div/div/div[1]').text
-
-
-    stream = driver.find_element_by_xpath('/html/body/div[1]/div[2]/bb-base-layout/div/main/div/div/div[1]/div[1]/div/div/div[3]').text
-
-
-    print(stream)
-
-    
-    #curUpcoming = upcoming.find('div')
-    #print(curUpcoming)
-    """
-    courseList = curSemCourses.findAll('a')
-    courseLinks = []
-    for i in courseList:
-        courseLinks.append(url[:-1] + i.get('href'))
-    
-    frames = []
-    for x in courseLinks:
-        driver.get(x)
-        soup1 = BeautifulSoup(driver.page_source, 'html.parser')
-        tbl = soup1.find('table',{"id":"assignments-student-table"})
-        frames.append(pd.read_html(str(tbl))[0])
-    
-    print(frames)
-
-    #logUsrPass = driver.find_element_by_xpath('/html/body/div[1]/dialog/div/div[1]/form/div[4]/input')
-    #logUsrPass = driver.find_element_by_name('commit')
-    #logUsrPass = driver.find_element_by_xpath("//input[type='submit']")
-    #logUsrPass = driver.find_element_by_name('Log Inss')
-    #actions.move_to_element(logUsrPass)
-    #actions.click(logUsrPass)
-    #actions.perform()
-
-    #elems = driver.find_elements_by_xpath("//a[@href]")
-    #for elem in elems:
-        #print(elem.get_attribute("href"))
-    
-`"""
     driver.quit()
 
-if __name__ == '__main__':
-    main()
+    #print(blackboardInfo)
+
+    return blackboardInfo

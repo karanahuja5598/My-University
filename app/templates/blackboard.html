@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Blackboard Info</h1>
+    {% for post in posts %}
+        <h3>Notification:</h3>
+        {% for note in post['content'] %}
+            <p>{{ note|safe }}</h3>
+        {% endfor %}
+        <br><br><br>
+    {% endfor %}
+{% endblock %}
