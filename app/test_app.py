@@ -277,7 +277,7 @@ class FlaskAppTests(unittest.TestCase):
         self.assertEqual(testText, "Welcome to the UIC School Notifier, c")
         
         driver.close()
-    '''
+    
     # check to see if the contents of our gradescope account are loaded properly
     def test_contents_gradescope_auth(self):
         #log in info for piazza
@@ -338,14 +338,21 @@ class FlaskAppTests(unittest.TestCase):
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-        testText = soup.find('h3').text
+        testTexts = []
 
-        self.assertEqual(testText, "midterm")
+        testTexts = soup.find_all('td')
+
+        testText = "midterm"
+        
+        for i in range(len(testTexts)):
+            if(testTexts[i].text == testText):
+                self.assertEqual(testTexts[i].text, testText)
+                break
 
         driver.close()
         
 
-    '''
+    
 
     # check if list of classes loads properly for gradescope, current semester
     def test_className_gradescope_auth(self):
