@@ -29,5 +29,7 @@ services:
     depends_on:
       - hub
     environment:
-      - HUB_HOST=hub
-      - HUB_PORT=4444
+      HUB_HOST: hub
+      HUB_PORT: 4444
+      NODE_MAX_INSTANCES: 5
+      NODE_MAX_SESSION: 5

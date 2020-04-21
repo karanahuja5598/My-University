@@ -2,11 +2,17 @@ from app import app
 import unittest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.expected_conditions import presence_of_element_located
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
+import time
 
 # got it from the source mentioned in sources.txt
 
@@ -14,11 +20,10 @@ class FlaskAppTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.client = webdriver.Remote(command_executor='http://hub:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
-
+        pass
     @classmethod
     def tearDownClass(cls):
-        cls.client.quit()
+        pass
 
     def setUp(self):
         # creates a test client
@@ -26,9 +31,14 @@ class FlaskAppTests(unittest.TestCase):
         # propagate the exceptions to the test client
         self.app.testing = True
 
-    def tearDown(self):
-        pass
+        try:
+            self.driver = webdriver.Remote(command_executor='http://hub:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+        except:
+            pass
 
+    def tearDown(self):
+        self.driver.quit()
+    
     # check to see if the index page loads the correct message when we aren't logged in
     def test_index_unauth(self):
         result = self.app.get('/')
@@ -78,14 +88,17 @@ class FlaskAppTests(unittest.TestCase):
 
         # first, we'll register to the app
 
-        url = "http://localhost:5000/register"
+        url = "http://my_uni:5000"
 
-        driver = self.client
+        driver = self.driver
 
         driver.implicitly_wait(30)
         driver.get(url)
+
+        url = "http://my_uni:5000/register"
+        driver.get(url)
         
-        usrname = driver.find_element_by_xpath('//*[@id="username"]')
+        usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
         usrname.send_keys("k")
 
         pword = driver.find_element_by_xpath('/html/body/form/p[2]/input')
@@ -95,7 +108,7 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll login
 
-        url = "http://localhost:5000/login"
+        url = "http://my_uni:5000/login"
 
         driver.get(url)
         
@@ -109,7 +122,7 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll update piazza information
 
-        url = "http://localhost:5000/registerPiazza"
+        url = "http://my_uni:5000/registerPiazza"
 
         driver.get(url)
         
@@ -129,23 +142,29 @@ class FlaskAppTests(unittest.TestCase):
 
         self.assertEqual(testText, "Welcome to the UIC School Notifier, k")
 
+        driver.close()
+
 
     # check to see if the contents of our piazza account are loaded properly
     def test_contents_piazza_auth(self):
         #log in info for piazza
+        
         EMAIL = "usert4363@gmail.com"
         PASSWORD = "cs494Awesome"
 
         # first, we'll register to the app
 
-        url = "http://localhost:5000/register"
+        url = "http://my_uni:5000"
 
-        driver = self.client
+        driver = self.driver
 
         driver.implicitly_wait(30)
         driver.get(url)
+
+        url = "http://my_uni:5000/register"
+        driver.get(url)
         
-        usrname = driver.find_element_by_xpath('//*[@id="username"]')
+        usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
         usrname.send_keys("v")
 
         pword = driver.find_element_by_xpath('/html/body/form/p[2]/input')
@@ -155,7 +174,7 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll login
 
-        url = "http://localhost:5000/login"
+        url = "http://my_uni:5000/login"
 
         driver.get(url)
         
@@ -169,7 +188,7 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll update piazza information
 
-        url = "http://localhost:5000/registerPiazza"
+        url = "http://my_uni:5000/registerPiazza"
 
         driver.get(url)
         
@@ -183,7 +202,7 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll load our piazza information
 
-        url = "http://localhost:5000/piazza"
+        url = "http://my_uni:5000/piazza"
 
         driver.get(url)
 
@@ -193,24 +212,27 @@ class FlaskAppTests(unittest.TestCase):
 
         self.assertEqual(testText, "Post Title: syncing github usernames")
 
+        driver.close()
+        
+        
+    
     # check to see if we can update our gradescope credentials properly
     def test_register_gradescope_auth(self):
         #log in info for gradescope
-
-        #WAIT TO UPDATE WITH PERSONAL CREDENTIALS
-        EMAIL = ""
-        PASSWORD = ""
+        
+        EMAIL = "usert4363@gmail.com"
+        PASSWORD = "cs494Awesome"
 
         # first, we'll register to the app
 
-        url = "http://localhost:5000/register"
+        url = "http://my_uni:5000/register"
 
-        driver = self.client
+        driver = self.driver
 
         driver.implicitly_wait(30)
         driver.get(url)
         
-        usrname = driver.find_element_by_xpath('//*[@id="username"]')
+        usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
         usrname.send_keys("c")
 
         pword = driver.find_element_by_xpath('/html/body/form/p[2]/input')
@@ -220,7 +242,7 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll login
 
-        url = "http://localhost:5000/login"
+        url = "http://my_uni:5000/login"
 
         driver.get(url)
         
@@ -234,7 +256,7 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll update piazza information
 
-        url = "http://localhost:5000/registerGradescope"
+        url = "http://my_uni:5000/registerGradescope"
 
         driver.get(url)
         
@@ -252,26 +274,27 @@ class FlaskAppTests(unittest.TestCase):
 
         testText = soup.find('h1').text
 
-        #self.assertEqual(testText, "Welcome to the UIC School Notifier, k")
-        pass
-
+        self.assertEqual(testText, "Welcome to the UIC School Notifier, c")
+        
+        driver.close()
+    '''
     # check to see if the contents of our gradescope account are loaded properly
     def test_contents_gradescope_auth(self):
         #log in info for piazza
-        #WAIT TO UPDATE WITH PERSONAL CREDENTIALS
-        EMAIL = ""
-        PASSWORD = ""
+        
+        EMAIL = "usert4363@gmail.com"
+        PASSWORD = "cs494Awesome"
 
         # first, we'll register to the app
 
-        url = "http://localhost:5000/register"
+        url = "http://my_uni:5000/register"
 
-        driver = self.client
+        driver = self.driver
 
         driver.implicitly_wait(30)
         driver.get(url)
         
-        usrname = driver.find_element_by_xpath('//*[@id="username"]')
+        usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
         usrname.send_keys("j")
 
         pword = driver.find_element_by_xpath('/html/body/form/p[2]/input')
@@ -281,7 +304,7 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll login
 
-        url = "http://localhost:5000/login"
+        url = "http://my_uni:5000/login"
 
         driver.get(url)
         
@@ -295,7 +318,7 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll update piazza information
 
-        url = "http://localhost:5000/registerGradescope"
+        url = "http://my_uni:5000/registerGradescope"
 
         driver.get(url)
         
@@ -309,7 +332,7 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll load our piazza information
 
-        url = "http://localhost:5000/gradescope"
+        url = "http://my_uni:5000/gradescope"
 
         driver.get(url)
 
@@ -317,26 +340,31 @@ class FlaskAppTests(unittest.TestCase):
 
         testText = soup.find('h3').text
 
-        self.assertEqual(testText, "Project 3 Submission")
-        pass
+        self.assertEqual(testText, "midterm")
+
+        driver.close()
+        
+
+    '''
 
     # check if list of classes loads properly for gradescope, current semester
     def test_className_gradescope_auth(self):
-        #log in info for piazza
-        #WAIT TO UPDATE WITH PERSONAL CREDENTIALS
-        EMAIL = ""
-        PASSWORD = ""
+        #log in info for gradescope
+        
+        EMAIL = "usert4363@gmail.com"
+        PASSWORD = "cs494Awesome"
 
         # first, we'll register to the app
 
-        url = "http://localhost:5000/register"
+        url = "http://my_uni:5000/register"
 
-        driver = self.client
+        driver = self.driver
 
         driver.implicitly_wait(30)
+        
         driver.get(url)
         
-        usrname = driver.find_element_by_xpath('//*[@id="username"]')
+        usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
         usrname.send_keys("j")
 
         pword = driver.find_element_by_xpath('/html/body/form/p[2]/input')
@@ -345,8 +373,8 @@ class FlaskAppTests(unittest.TestCase):
         pword.send_keys(Keys.RETURN)
 
         # next we'll login
-
-        url = "http://localhost:5000/login"
+        
+        url = "http://my_uni:5000/login"
 
         driver.get(url)
         
@@ -358,9 +386,9 @@ class FlaskAppTests(unittest.TestCase):
 
         pword.send_keys(Keys.RETURN)
 
-        # next we'll update piazza information
-
-        url = "http://localhost:5000/registerGradescope"
+        # next we'll update gradescope information
+        
+        url = "http://my_uni:5000/registerGradescope"
 
         driver.get(url)
         
@@ -372,25 +400,35 @@ class FlaskAppTests(unittest.TestCase):
 
         pword.send_keys(Keys.RETURN)
 
-        # next we'll load our piazza information
+        # next we'll load our gradescope information
 
-        url = "http://localhost:5000/gradescope"
+        url = "http://my_uni:5000/gradescope"
 
         driver.get(url)
 
+        #time.sleep(60)
+
         soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-        testText = soup.findAll('h3').text
+        #testText = soup.find('h3').text
 
-        self.assertEqual(testText[0], "CS 401")
-        self.assertEqual(testText[1], "CS 418")
-        pass
+        #webdrive = WebDriverWait(driver, 180).until(EC.presence_of_element_located((By.XPATH, '/html/body/h3')))
 
-# check to see if we can update our blackboard credentials properly
+        #testText = driver.find_element_by_xpath('/html/body/h3').text
+
+        testText = soup.find('h3').text
+
+        self.assertEqual(testText, "Course Name: CS 494")
+
+        driver.close()
+
+      
+    '''    
+    # check to see if we can update our blackboard credentials properly
     def test_register_blackboard_auth(self):
         pass
 
-# check to see if the recent activity of our blackbaord account are loaded properly
-def test_contents_blackboard_auth(self):
-    pass
-    
+    # check to see if the recent activity of our blackbaord account are loaded properly
+    def test_contents_blackboard_auth(self):
+        pass
+    '''

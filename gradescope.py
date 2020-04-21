@@ -20,7 +20,7 @@ def getGradescopeInfo(username, password):
     EMAIL = username
     PASSWORD = password
     currentSem = "Spring 2020"
-    url = "https://www.gradescope.com/"
+    url = "http://www.gradescope.com/"
 
     #driver = webdriver.Chrome()
     driver = webdriver.Remote(command_executor='http://hub:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
