@@ -22,7 +22,7 @@
 
 # post1 = posts.__next__()
 
-def getPiazzaInfo(username, password):
+async def getPiazzaInfo(username, password):
 	from piazza_api import Piazza
 	p = Piazza()
 	p.user_login(email = username,password = password)
