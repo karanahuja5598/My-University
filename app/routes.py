@@ -5,10 +5,37 @@ import app.forms as forms
 from piazza import getPiazzaInfo
 from gradescope import getGradescopeInfo
 from bboard import getBlackboardInfo
+import json
+import asyncio
+from threading import Thread
 
 # set up pymongo
 from flask_pymongo import PyMongo
 mongo = PyMongo(app)
+
+#async def infoRunner(selector, mainUsername, username, password):
+def infoRunner(selector, mainUsername, username, password):
+    userDB = mongo.cx["userDB"]
+    userCollection = userDB["userCollection"]
+    neededInfo = []
+    if selector == "Piazza":
+        neededInfo = getPiazzaInfo(username, password)
+    elif selector == "Gradescope":
+        neededInfo =  getGradescopeInfo(username, password)
+    else:
+        neededInfo = getBlackboardInfo(username, password)
+    jsonInfo = json.dumps(neededInfo)
+    userCollection.update(
+        { "username" : mainUsername },
+            { "$set" : 
+                {
+                    "data-"+selector : jsonInfo
+                }
+            }
+    )
+    return
+
+
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -64,6 +91,42 @@ async def register():
         return redirect(url_for('login'))
     return await render_template('register.html', title='Register', form=form)
 
+@app.route('/update', methods=['GET', 'POST'])
+async def update():
+    form = forms.UpdateForm()
+    if form.validate_on_submit():
+        userDB = mongo.cx["userDB"]
+        userCollection = userDB["userCollection"]
+        selector = form.which.data
+        userCollection.update(
+            { "username" : session["user"]["username"] },
+                { "$set" : 
+                    {
+                        "username-"+selector : form.username.data,
+                        "password-"+selector : form.password.data,
+                        "data-"+selector : ""
+                    }
+                }
+        )
+        user = userCollection.find_one({ "username" : session["user"]["username"] })
+        userInfo = {}
+        userInfo["username"] = user["username"]
+        userInfo["username-"+selector] = user["username-"+selector]
+        userInfo["password-"+selector] = user["password-"+selector]
+        session["user"] = userInfo
+        await flash("Updated info for " + selector)
+        #task = []
+        #task = task.append(0)
+        #task = asyncio.ensure_future(infoRunner(selector, userInfo["username"], userInfo["username-"+selector], userInfo["password-"+selector] ))
+        thread = Thread(
+            target=infoRunner,
+            args = (selector, userInfo["username"], userInfo["username-"+selector], userInfo["password-"+selector]))
+        thread.start()
+        return redirect(url_for('index'))
+    return await render_template('update.html', title='Update', form=form)
+
+
+
 @app.route('/registerPiazza', methods=['GET', 'POST'])
 async def registerPiazza():
     form = forms.LoginForm()
@@ -90,8 +153,16 @@ async def registerPiazza():
 
 @app.route('/piazza', methods=['GET', 'POST'])
 async def piazza():
-    piazzaInfo = await getPiazzaInfo(session["user"]["username-Piazza"], session["user"]["password-Piazza"])
-    return await render_template('piazza.html', title='Register', posts = piazzaInfo)
+    #piazzaInfo = await getPiazzaInfo(session["user"]["username-Piazza"], session["user"]["password-Piazza"])
+    #return await render_template('piazza.html', title='Register', posts = piazzaInfo)
+    userDB = mongo.cx["userDB"]
+    userCollection = userDB["userCollection"]
+    user = userCollection.find_one({ "username" : session["user"]["username"] })
+    neededInfo = user["data-Piazza"]
+    if(len(neededInfo) != 0):
+        neededInfo = json.loads(neededInfo)
+        return await render_template('piazza.html', title='Register', posts = neededInfo)
+    return redirect(url_for('index'))
 
 @app.route('/registerGradescope', methods=['GET', 'POST'])
 async def registerGradescope():
@@ -119,8 +190,16 @@ async def registerGradescope():
 
 @app.route('/gradescope', methods=['GET', 'POST'])
 async def gradescope():
-    gradescopeInfo = await getGradescopeInfo(session["user"]["username-Gradescope"], session["user"]["password-Gradescope"])
-    return await render_template('gradescope.html', title='Register', posts = gradescopeInfo)
+    #gradescopeInfo = await getGradescopeInfo(session["user"]["username-Gradescope"], session["user"]["password-Gradescope"])
+    #return await render_template('gradescope.html', title='Register', posts = gradescopeInfo)
+    userDB = mongo.cx["userDB"]
+    userCollection = userDB["userCollection"]
+    user = userCollection.find_one({ "username" : session["user"]["username"] })
+    neededInfo = user["data-Gradescope"]
+    if(len(neededInfo) != 0):
+        neededInfo = json.loads(neededInfo)
+        return await render_template('gradescope.html', title='Register', posts = neededInfo)
+    return redirect(url_for('index'))
 
 @app.route('/registerBlackboard', methods=['GET', 'POST'])
 async def registerBlackboard():

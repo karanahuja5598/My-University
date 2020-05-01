@@ -8,7 +8,8 @@
 
 
 
-async def getGradescopeInfo(username, password):
+#async def getGradescopeInfo(username, password):
+def getGradescopeInfo(username, password):
     from selenium import webdriver
     from selenium.webdriver.common.keys import Keys
     from selenium.webdriver.common.action_chains import ActionChains
@@ -19,7 +20,7 @@ async def getGradescopeInfo(username, password):
 
     EMAIL = username
     PASSWORD = password
-    currentSem = "Spring 2020"
+    #currentSem = "Spring 2020"
     url = "http://www.gradescope.com/"
 
     #driver = webdriver.Chrome()
