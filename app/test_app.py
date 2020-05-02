@@ -111,7 +111,7 @@ class FlaskAppTests(unittest.TestCase):
         url = "http://my_uni:5000/login"
 
         driver.get(url)
-        
+
         usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
         usrname.send_keys("k")
 
@@ -122,14 +122,20 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll update piazza information
 
-        url = "http://my_uni:5000/registerPiazza"
+        url = "http://my_uni:5000/update"
 
         driver.get(url)
         
         usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
         usrname.send_keys(EMAIL)
 
-        pword = driver.find_element_by_xpath('/html/body/form/p[2]/input')
+        piazza = driver.find_element_by_xpath('/html/body/form/ul/li[1]/input')
+        actions = ActionChains(driver)
+        actions.move_to_element(piazza)
+        actions.click(piazza)
+        actions.perform()
+
+        pword = driver.find_element_by_xpath('/html/body/form/p[3]/input')
         pword.send_keys(PASSWORD)
 
         pword.send_keys(Keys.RETURN)
@@ -144,7 +150,7 @@ class FlaskAppTests(unittest.TestCase):
 
         driver.close()
 
-
+    
     # check to see if the contents of our piazza account are loaded properly
     def test_contents_piazza_auth(self):
         #log in info for piazza
@@ -188,34 +194,51 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll update piazza information
 
-        url = "http://my_uni:5000/registerPiazza"
+        url = "http://my_uni:5000/update"
 
         driver.get(url)
         
         usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
         usrname.send_keys(EMAIL)
 
-        pword = driver.find_element_by_xpath('/html/body/form/p[2]/input')
+        piazza = driver.find_element_by_xpath('/html/body/form/ul/li[1]/input')
+        actions = ActionChains(driver)
+        actions.move_to_element(piazza)
+        actions.click(piazza)
+        actions.perform()
+
+        pword = driver.find_element_by_xpath('/html/body/form/p[3]/input')
         pword.send_keys(PASSWORD)
 
         pword.send_keys(Keys.RETURN)
 
         # next we'll load our piazza information
+        piazzaButton = driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[1]/a/button')
+        actions1 = ActionChains(driver)
+        actions1.move_to_element(piazzaButton)
+        actions1.click(piazzaButton)
+        actions1.perform()
 
-        url = "http://my_uni:5000/piazza"
-
-        driver.get(url)
+        refreshButton = driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/a[1]/button')
+        actions2 = ActionChains(driver)
+        actions2.move_to_element(refreshButton)
+        actions2.click(refreshButton)
+        actions2.perform()
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-        testText = soup.find('h3').text
+        testTexts = soup.find_all('h3')
 
-        self.assertEqual(testText, "Post Title: syncing github usernames")
+        testText = "Post Title: syncing github usernames"
+
+        for i in range(len(testTexts)):
+            if(testTexts[i].text == testText):
+                self.assertEqual(testTexts[i].text, testText)
+                break
 
         driver.close()
         
         
-    
     # check to see if we can update our gradescope credentials properly
     def test_register_gradescope_auth(self):
         #log in info for gradescope
@@ -256,14 +279,20 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll update piazza information
 
-        url = "http://my_uni:5000/registerGradescope"
+        url = "http://my_uni:5000/update"
 
         driver.get(url)
         
         usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
         usrname.send_keys(EMAIL)
 
-        pword = driver.find_element_by_xpath('/html/body/form/p[2]/input')
+        gradescope = driver.find_element_by_xpath('/html/body/form/ul/li[2]/input')
+        actions = ActionChains(driver)
+        actions.move_to_element(gradescope)
+        actions.click(gradescope)
+        actions.perform()
+
+        pword = driver.find_element_by_xpath('/html/body/form/p[3]/input')
         pword.send_keys(PASSWORD)
 
         pword.send_keys(Keys.RETURN)
@@ -318,23 +347,37 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll update piazza information
 
-        url = "http://my_uni:5000/registerGradescope"
+        url = "http://my_uni:5000/update"
 
         driver.get(url)
         
         usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
         usrname.send_keys(EMAIL)
 
-        pword = driver.find_element_by_xpath('/html/body/form/p[2]/input')
+        gradescope = driver.find_element_by_xpath('/html/body/form/ul/li[2]/input')
+        actions = ActionChains(driver)
+        actions.move_to_element(gradescope)
+        actions.click(gradescope)
+        actions.perform()
+
+        pword = driver.find_element_by_xpath('/html/body/form/p[3]/input')
         pword.send_keys(PASSWORD)
 
         pword.send_keys(Keys.RETURN)
 
-        # next we'll load our piazza information
+        # next we'll load our gradescope information
+        gradescopeButton = driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/a/button')
+        actions1 = ActionChains(driver)
+        actions1.move_to_element(gradescopeButton)
+        actions1.click(gradescopeButton)
+        actions1.perform()
 
-        url = "http://my_uni:5000/gradescope"
-
-        driver.get(url)
+        refreshButton = driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/a[1]/button')
+        actions2 = ActionChains(driver)
+        actions2.move_to_element(refreshButton)
+        actions2.click(refreshButton)
+        actions2.perform()
+        
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
 
@@ -353,7 +396,7 @@ class FlaskAppTests(unittest.TestCase):
         
 
     
-
+    
     # check if list of classes loads properly for gradescope, current semester
     def test_className_gradescope_auth(self):
         #log in info for gradescope
@@ -395,47 +438,124 @@ class FlaskAppTests(unittest.TestCase):
 
         # next we'll update gradescope information
         
-        url = "http://my_uni:5000/registerGradescope"
+        url = "http://my_uni:5000/update"
 
         driver.get(url)
         
         usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
         usrname.send_keys(EMAIL)
 
-        pword = driver.find_element_by_xpath('/html/body/form/p[2]/input')
+        gradescope = driver.find_element_by_xpath('/html/body/form/ul/li[2]/input')
+        actions = ActionChains(driver)
+        actions.move_to_element(gradescope)
+        actions.click(gradescope)
+        actions.perform()
+
+        pword = driver.find_element_by_xpath('/html/body/form/p[3]/input')
         pword.send_keys(PASSWORD)
 
         pword.send_keys(Keys.RETURN)
 
         # next we'll load our gradescope information
+        gradescopeButton = driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/a/button')
+        actions1 = ActionChains(driver)
+        actions1.move_to_element(gradescopeButton)
+        actions1.click(gradescopeButton)
+        actions1.perform()
 
-        url = "http://my_uni:5000/gradescope"
-
-        driver.get(url)
-
-        #time.sleep(60)
+        refreshButton = driver.find_element_by_xpath('/html/body/div[2]/div[1]/div/a[1]/button')
+        actions2 = ActionChains(driver)
+        actions2.move_to_element(refreshButton)
+        actions2.click(refreshButton)
+        actions2.perform()
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-        #testText = soup.find('h3').text
+        testTexts = soup.find_all('h3')
 
-        #webdrive = WebDriverWait(driver, 180).until(EC.presence_of_element_located((By.XPATH, '/html/body/h3')))
-
-        #testText = driver.find_element_by_xpath('/html/body/h3').text
-
-        testText = soup.find('h3').text
-
-        self.assertEqual(testText, "Course Name: CS 494")
+        testText = "Course Name: CS 494"
+        
+        for i in range(len(testTexts)):
+            if(testTexts[i].text == testText):
+                self.assertEqual(testTexts[i].text, testText)
+                break
 
         driver.close()
 
       
-    '''    
+     
     # check to see if we can update our blackboard credentials properly
     def test_register_blackboard_auth(self):
-        pass
+        #log in info for blackboard
+        
+        EMAIL = "usert4363@gmail.com"
+        PASSWORD = "cs494Awesome"
 
+        # first, we'll register to the app
+
+        url = "http://my_uni:5000/register"
+
+        driver = self.driver
+
+        driver.implicitly_wait(30)
+        driver.get(url)
+        
+        usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
+        usrname.send_keys("r")
+
+        pword = driver.find_element_by_xpath('/html/body/form/p[2]/input')
+        pword.send_keys("r")
+
+        pword.send_keys(Keys.RETURN)
+
+        # next we'll login
+
+        url = "http://my_uni:5000/login"
+
+        driver.get(url)
+        
+        usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
+        usrname.send_keys("r")
+
+        pword = driver.find_element_by_xpath('/html/body/form/p[2]/input')
+        pword.send_keys("r")
+
+        pword.send_keys(Keys.RETURN)
+
+        # next we'll update blackboard information
+
+        url = "http://my_uni:5000/update"
+
+        driver.get(url)
+        
+        usrname = driver.find_element_by_xpath('/html/body/form/p[1]/input')
+        usrname.send_keys(EMAIL)
+
+        gradescope = driver.find_element_by_xpath('/html/body/form/ul/li[3]/input')
+        actions = ActionChains(driver)
+        actions.move_to_element(gradescope)
+        actions.click(gradescope)
+        actions.perform()
+
+        pword = driver.find_element_by_xpath('/html/body/form/p[3]/input')
+        pword.send_keys(PASSWORD)
+
+        pword.send_keys(Keys.RETURN)
+
+        #now we'll make sure that it updated properly
+        #if it did, it will have returned us to the index
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+        testText = soup.find('h1').text
+
+        self.assertEqual(testText, "Welcome to the UIC School Notifier, r")
+        
+        driver.close()
+        
+    
     # check to see if the recent activity of our blackbaord account are loaded properly
     def test_contents_blackboard_auth(self):
+        # Due to security concerns have having UIC's account info released publicly, this test case
+        # cannot be implemented.
         pass
-    '''
+    
