@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
+<!--This is the template for our update page-->
 {% block content %}
-    <h1>Enter Piazza Login</h1>
+    <!--Show our update login information form-->
+    <h1>Update Login Information</h1>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
@@ -10,6 +12,8 @@
             {% for error in form.username.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
+            {{ form.which.label }}
+            {{ form.which() }}
         </p>
         <p>
             {{ form.password.label }}<br>

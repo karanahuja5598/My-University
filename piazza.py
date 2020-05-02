@@ -1,57 +1,85 @@
-# from piazza_api import Piazza
-
-# p = Piazza()
-# p.user_login(email = "usert4363@gmail.com",password = "cs494Awesome")
-
-# user_profile = p.get_user_profile()
-
-# print(p.get_user_classes())
-
-# get a list of user classes
-# classes = p.get_user_classes()
-
-# ts100 = p.network("k7aywdror8n4o0")
-
-# access the first class from that list
-# class1 = p.network(classes[0]['nid'])
-
-# posts = class1.iter_all_posts(limit=5)
-
-# for post in posts:
-# 	print(str(post))
-
-# post1 = posts.__next__()
-
+# function that gets us the information we need from piazza
 def getPiazzaInfo(username, password):
+	# get our api
 	from piazza_api import Piazza
-	p = Piazza()
-	p.user_login(email = username,password = password)
-	classes = p.get_user_classes()
-	class1 = p.network(classes[0]['nid'])
-	posts = class1.iter_all_posts(limit=5)
-	neededInfo = []
-	for post in posts:
-		postInfo = {}
-		postInfo['subject'] = post['history'][0]['subject']
-		postInfo['content'] = post['history'][0]['content']
-		postInfo['followUps'] = []
-		for mainFollowUp in post['children']:
-			followUp = {}
-			followUp['mainComment'] = mainFollowUp['subject']
-			followUp['subComments'] = []
-			for subComment in mainFollowUp['children']:
-				followUp['subComments'].append(subComment['subject'])
-			postInfo['followUps'].append(followUp)
-		neededInfo.append(postInfo)
-	return neededInfo
+	import time
 
-# for post in neededInfo:
-# 	print('Post Title: {0}'.format(post['subject']))
-# 	print('Post Content: {0}'.format(post['content']))
-# 	print('Follow Up Discussions: ')
-# 	for followUp in post['followUps']:
-# 		print('    {0}'.format(followUp['mainComment']))
-# 		for subComment in followUp:
-# 			print('        {0}'.format(subComment))
+	# initalize piazza client
+	p = Piazza()
+	# login
+	p.user_login(email = username,password = password)
+
+	# get our class list
+	classes = p.get_user_classes()
+
+	# information for all classes
+	classesInfo = []
+	# iterate till we have one item per class in the list,
+	# containing all needed elements for that class
+	for c in classes:
+		# individual class information
+		classInfo = {}
+		# set class name and number as per piazza
+		classInfo['name'] = c['name']
+		classInfo['number'] = c['num']
+		# get url/nid of the class
+		curClass = p.network(c['nid'])
+
+		# get our iterator for the posts of that class
+		posts = curClass.iter_all_posts(limit = 5)
+
+		# store post info in here
+		neededInfo = []
+
+		# since piazza api has a speed limit,
+		# we are enclosing the data in a try catch
+		try:
+			# iterate through posts
+			for post in posts:
+				# store post information in here
+				postInfo = {}
+
+				# set post subject and content
+				postInfo['subject'] = post['history'][0]['subject']
+				postInfo['content'] = post['history'][0]['content']
+
+				# store followups information here
+				postInfo['followUps'] = []
+
+				# iterate through 'main' follow ups
+				for mainFollowUp in post['children']:
+
+					# if the follow up has a subject, then
+					# it is valid
+					if 'subject' in mainFollowUp:
+						# store followup info here
+						followUp = {}
+
+						# set followup information
+						followUp['mainComment'] = mainFollowUp['subject']
+
+						# store and iterate through follow up responses
+						followUp['subComments'] = []
+						for subComment in mainFollowUp['children']:
+							followUp['subComments'].append(subComment['subject'])
+
+						# append followup to followups
+						postInfo['followUps'].append(followUp)
+				
+				# append post to posts
+				neededInfo.append(postInfo)
+
+			# store posts information for a class
+			classInfo['posts'] = neededInfo
+
+			# add class information to our list
+			classesInfo.append(classInfo)
+		except:
+			# if we tried too fast,
+			# then there was an error
+			print("piazza api trying too fast!")
+
+	# return our object of class informations
+	return classesInfo
 
 

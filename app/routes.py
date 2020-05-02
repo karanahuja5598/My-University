@@ -1,151 +1,313 @@
-from flask import render_template, flash, redirect, url_for, session
+# import the needed libraries
+from quart import render_template, flash, redirect, url_for, session
 from app import app
 import app.forms as forms
 from piazza import getPiazzaInfo
 from gradescope import getGradescopeInfo
 from bboard import getBlackboardInfo
+import json
+import asyncio
+from threading import Thread
 
 # set up pymongo
 from flask_pymongo import PyMongo
 mongo = PyMongo(app)
 
+# this is the function we use to fetch and store any information we need
+# from piazza, gradescope, or blackboard
+# generally, we run this function on its own thread
+def infoRunner(selector, mainUsername, username, password):
+
+    # connect to our db
+    userDB = mongo.cx["userDB"]
+    userCollection = userDB["userCollection"]
+
+    # get the needed info
+    neededInfo = []
+    if selector == "Piazza":
+        neededInfo = getPiazzaInfo(username, password)
+    elif selector == "Gradescope":
+        neededInfo =  getGradescopeInfo(username, password)
+    else:
+        neededInfo = getBlackboardInfo(username, password)
+
+    # convert the info into a json
+    # this is so we can store it in mongo
+    jsonInfo = json.dumps(neededInfo)
+
+    # store the data in mongo
+    userCollection.update(
+        { "username" : mainUsername },
+            { "$set" : 
+                {
+                    "data-"+selector : jsonInfo
+                }
+            }
+    )
+    return
+
+# our home page route
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
-def index():
-    #temp = getGradescopeInfo("blahblah@uic.edu","blahblah")
-    #temp = getBlackboardInfo("blorg10@uic.edu", "blargaoe")
-    if("user" in session):
-        if("username-Piazza" in session["user"] and session["user"]["username-Piazza"] != ""):
-            return render_template('index.html', title='Home', loggedIn = True, piazza = True, user = session["user"])
-        return render_template('index.html', title='Home', loggedIn = True, user = session["user"])
-    return render_template('index.html', title='Home')
+async def index():
 
+    # if the user is in the session, we do this:
+    if("user" in session):
+
+        # First, we connect to db
+        userDB = mongo.cx["userDB"]
+        userCollection = userDB["userCollection"]
+        user = userCollection.find_one({ "username" : session["user"]["username"] })
+
+        # now we build our userInfo object
+        # which will be stored in sessions
+        userInfo = {}
+        userInfo["username"] = user["username"]
+        userInfo["username-Piazza"] = user["username-Piazza"]
+        userInfo["password-Piazza"] = user["password-Piazza"]
+        userInfo["data-Piazza"] = user["data-Piazza"]
+        userInfo["username-Gradescope"] = user["username-Gradescope"]
+        userInfo["password-Gradescope"] = user["password-Gradescope"]
+        userInfo["data-Gradescope"] = user["data-Gradescope"]
+        userInfo["username-Blackboard"] = user["username-Blackboard"]
+        userInfo["password-Blackboard"] = user["password-Blackboard"]
+        userInfo["data-Blackboard"] = user["data-Blackboard"]
+
+        # store in session
+        session["user"] = userInfo
+
+        # we find out if we can fetch the data
+        canFetch = {"Piazza" : False, "Gradescope" : False, "Blackboard" : False}
+        for selector in canFetch:
+            if(("username-"+selector) in session["user"] and session["user"]["username-"+selector] != ""):
+                canFetch[selector] = True
+
+        # find out if there is data for each site stored in session
+        hasData = {"Piazza" : False, "Gradescope" : False, "Blackboard" : False}
+
+        # turn our json data in session back to its full data structure, and store it
+        unraveledData = {"Piazza" : [], "Gradescope" : [], "Blackboard" : []}
+        for selector in unraveledData:
+            if(("data-"+selector) in session["user"] and session["user"]["data-"+selector] != ""):
+                hasData[selector] = True
+                unraveledData[selector] = json.loads(session["user"]["data-"+selector])
+
+        # render our home page (logged in edition)
+        return await render_template(
+            'index.html', 
+            title='Home', 
+            loggedIn = True, 
+            canFetch = canFetch,
+            hasData = hasData, 
+            user = session["user"], 
+            unraveled = unraveledData)
+    
+    # render our home page (not logged in edition)s
+    return await render_template('index.html', title='Home')
+
+# our login route
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+async def login():
+
+    # set up our login form
     form = forms.LoginForm()
+
+    # if form was submitted and validated, then:
     if form.validate_on_submit():
+
+        # connect to db
         userDB = mongo.cx["userDB"]
         userCollection = userDB["userCollection"]
         user = userCollection.find_one({ "username" : form.username.data })
+
+        # if the user does not exist in db,
+        # we can't login, flash a message,
+        # go to homepage
         if user == None :
-            flash("Username does not exist")
+            await flash("Username does not exist")
             return redirect(url_for('login'))
+        
+        # if the password is wrong,
+        # we can't login, flash a message,
+        # go to homepage
         if form.password.data != user["password"] :
-            flash("Wrong password")
+            await flash("Wrong password")
             return redirect(url_for('login'))
+
+        # now we build our userInfo object
+        # which will be stored in sessions
         userInfo = {}
         userInfo["username"] = user["username"]
         userInfo["username-Piazza"] = user["username-Piazza"]
         userInfo["password-Piazza"] = user["password-Piazza"]
+        userInfo["data-Piazza"] = user["data-Piazza"]
         userInfo["username-Gradescope"] = user["username-Gradescope"]
         userInfo["password-Gradescope"] = user["password-Gradescope"]
+        userInfo["data-Gradescope"] = user["data-Gradescope"]
         userInfo["username-Blackboard"] = user["username-Blackboard"]
         userInfo["password-Blackboard"] = user["password-Blackboard"]
-        session["user"] = userInfo
-        return redirect(url_for('index'))
-    return render_template('login.html', title='Sign In', form=form)
+        userInfo["data-Blackboard"] = user["data-Blackboard"]
 
+        # store in session
+        session["user"] = userInfo
+
+        # go to index, but now we're logged in
+        return redirect(url_for('index'))
+
+    # render login page
+    return await render_template('login.html', title='Sign In', form=form)
+
+# our logout route
+@app.route('/logout', methods=['GET', 'POST'])
+async def logout():
+    # it just pops the user from session
+    if("user" in session):
+        session.pop("user")
+    # then we go back to index
+    return redirect(url_for('index'))
+
+# our register route
 @app.route('/register', methods=['GET', 'POST'])
-def register():
+async def register():
+
+    # set up our register form
     form = forms.RegisterForm()
+
+    # if form was submitted and validated, then:
     if form.validate_on_submit():
+
+        # connect to db
         userDB = mongo.cx["userDB"]
         userCollection = userDB["userCollection"]
+
+        # if username was found, user already exists.
+        # can't register, flash message,
+        # redirect back here again
         if userCollection.find_one({ "username" : form.username.data }) != None :
-            flash('Username already exists')
+            await flash('Username already exists')
             return redirect(url_for('register'))
+
+        # otherwise, it's valid, we can register
+        # store userinfo in db
         userCollection.insert_one(
             { "username" : form.username.data, "password" : form.password.data, 
-                "username-Piazza" : "", "password-Piazza" : "",
-                "username-Gradescope" : "", "password-Gradescope" : "",
-                "username-Blackboard" : "", "password-Blackboard" : ""})
-        flash("You are registered")
-        return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
+                "username-Piazza" : "", "password-Piazza" : "", "data-Piazza" : "",
+                "username-Gradescope" : "", "password-Gradescope" : "", "data-Gradescope" : "",
+                "username-Blackboard" : "", "password-Blackboard" : "", "data-Blackboard" : "",})
 
-@app.route('/registerPiazza', methods=['GET', 'POST'])
-def registerPiazza():
-    form = forms.LoginForm()
+        # flash that you are registered
+        await flash("You are registered")
+        # redirect to login page
+        return redirect(url_for('login'))
+    
+    # render register page
+    return await render_template('register.html', title='Register', form=form)
+
+# our update login information route
+@app.route('/update', methods=['GET', 'POST'])
+async def update():
+
+    # set up our update form
+    form = forms.UpdateForm()
+
+    # if form was submitted and validated, then:
     if form.validate_on_submit():
+
+        # connect to db
         userDB = mongo.cx["userDB"]
         userCollection = userDB["userCollection"]
+        selector = form.which.data
+
+        # update data in db
         userCollection.update(
             { "username" : session["user"]["username"] },
                 { "$set" : 
                     {
-                        "username-Piazza" : form.username.data,
-                        "password-Piazza" : form.password.data
+                        "username-"+selector : form.username.data,
+                        "password-"+selector : form.password.data,
+                        "data-"+selector : ""
                     }
                 }
         )
+
+        # now we build our userInfo object
+        # which will be stored in sessions
         user = userCollection.find_one({ "username" : session["user"]["username"] })
         userInfo = {}
         userInfo["username"] = user["username"]
         userInfo["username-Piazza"] = user["username-Piazza"]
         userInfo["password-Piazza"] = user["password-Piazza"]
-        session["user"] = userInfo
-        return redirect(url_for('index'))
-    return render_template('registerPiazza.html', title='Register', form=form)
-
-@app.route('/piazza', methods=['GET', 'POST'])
-def piazza():
-    piazzaInfo = getPiazzaInfo(session["user"]["username-Piazza"], session["user"]["password-Piazza"])
-    return render_template('piazza.html', title='Register', posts = piazzaInfo)
-
-@app.route('/registerGradescope', methods=['GET', 'POST'])
-def registerGradescope():
-    form = forms.LoginForm()
-    if form.validate_on_submit():
-        userDB = mongo.cx["userDB"]
-        userCollection = userDB["userCollection"]
-        userCollection.update(
-            { "username" : session["user"]["username"] },
-                { "$set" : 
-                    {
-                        "username-Gradescope" : form.username.data,
-                        "password-Gradescope" : form.password.data
-                    }
-                }
-        )
-        user = userCollection.find_one({ "username" : session["user"]["username"] })
-        userInfo = {}
-        userInfo["username"] = user["username"]
+        userInfo["data-Piazza"] = user["data-Piazza"]
         userInfo["username-Gradescope"] = user["username-Gradescope"]
         userInfo["password-Gradescope"] = user["password-Gradescope"]
-        session["user"] = userInfo
-        return redirect(url_for('index'))
-    return render_template('registerGradescope.html', title='Register', form=form)
-
-@app.route('/gradescope', methods=['GET', 'POST'])
-def gradescope():
-    gradescopeInfo = getGradescopeInfo(session["user"]["username-Gradescope"], session["user"]["password-Gradescope"])
-    return render_template('gradescope.html', title='Register', posts = gradescopeInfo)
-
-@app.route('/registerBlackboard', methods=['GET', 'POST'])
-def registerBlackboard():
-    form = forms.LoginForm()
-    if form.validate_on_submit():
-        userDB = mongo.cx["userDB"]
-        userCollection = userDB["userCollection"]
-        userCollection.update(
-            { "username" : session["user"]["username"] },
-                { "$set" : 
-                    {
-                        "username-Blackboard" : form.username.data,
-                        "password-Blackboard" : form.password.data
-                    }
-                }
-        )
-        user = userCollection.find_one({ "username" : session["user"]["username"] })
-        userInfo = {}
-        userInfo["username"] = user["username"]
+        userInfo["data-Gradescope"] = user["data-Gradescope"]
         userInfo["username-Blackboard"] = user["username-Blackboard"]
         userInfo["password-Blackboard"] = user["password-Blackboard"]
-        session["user"] = userInfo
-        return redirect(url_for('index'))
-    return render_template('registerBlackboard.html', title='Register', form=form)
+        userInfo["data-Blackboard"] = user["data-Blackboard"]
 
-@app.route('/blackboard', methods=['GET', 'POST'])
-def blackboard():
-    blackboardInfo = getBlackboardInfo(session["user"]["username-Blackboard"], session["user"]["password-Blackboard"])
-    return render_template('blackboard.html', title='Register', posts = blackboardInfo)
+        # store in session
+        session["user"] = userInfo
+        
+        # flash that the info was updated
+        await flash("Updated info for " + selector)
+
+        # redirect to index
+        return redirect(url_for('index'))
+
+    # render update page
+    return await render_template('update.html', title='Update', form=form)
+
+
+
+
+########
+# The below three routes, are just fetchers of data
+# they run our infoRunner() function
+# this function runs on its own thread,
+# then stores the information it gathers in mongo
+
+
+@app.route('/fetchPiazza', methods=['GET', 'POST'])
+async def fetchPiazza():
+    selector = "Piazza"
+    fetch = Thread(
+        target=infoRunner,
+        args = (
+            selector, 
+            session["user"]["username"], 
+            session["user"]["username-"+selector], 
+            session["user"]["password-"+selector]
+        )
+    )
+    fetch.start()
+    return redirect(url_for('index'))
+
+@app.route('/fetchGradescope', methods=['GET', 'POST'])
+async def fetchGradescope():
+    selector = "Gradescope"
+    fetch = Thread(
+        target=infoRunner,
+        args = (
+            selector, 
+            session["user"]["username"], 
+            session["user"]["username-"+selector], 
+            session["user"]["password-"+selector]
+        )
+    )
+    fetch.start()
+    return redirect(url_for('index'))
+
+@app.route('/fetchBlackboard', methods=['GET', 'POST'])
+async def fetchBlackboard():
+    selector = "Blackboard"
+    fetch = Thread(
+        target=infoRunner,
+        args = (
+            selector, 
+            session["user"]["username"], 
+            session["user"]["username-"+selector], 
+            session["user"]["password-"+selector]
+        )
+    )
+    fetch.start()
+    return redirect(url_for('index'))

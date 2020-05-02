@@ -1,6 +1,9 @@
 version: '3.4'
 
+# our docker services
 services:
+  
+  # this is the flask/quart part of it
   flask:
     build:
       context: .
@@ -11,17 +14,20 @@ services:
       - mongodb
     container_name: my_uni
 
+  # this is our db
   mongodb:
     image: mongo
     ports:
       - 27017:27017
 
+  # this is our selenium hub (scraper)
   hub:
     restart: always
     image: selenium/hub:3.141.59-20200409
     ports:
       - "4444:4444"
 
+  # this is the chrome image selenium uses to automate chrome
   chrome:
     image: selenium/node-chrome:3.141.59-20200409
     volumes:
@@ -29,5 +35,7 @@ services:
     depends_on:
       - hub
     environment:
-      - HUB_HOST=hub
-      - HUB_PORT=4444
+      HUB_HOST: hub
+      HUB_PORT: 4444
+      NODE_MAX_INSTANCES: 5
+      NODE_MAX_SESSION: 5
