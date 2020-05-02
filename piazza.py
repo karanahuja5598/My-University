@@ -24,27 +24,42 @@
 
 #async def getPiazzaInfo(username, password):
 def getPiazzaInfo(username, password):
+	import piazza_api
 	from piazza_api import Piazza
+	import time
 	p = Piazza()
 	p.user_login(email = username,password = password)
 	classes = p.get_user_classes()
-	class1 = p.network(classes[0]['nid'])
-	posts = class1.iter_all_posts(limit=5)
-	neededInfo = []
-	for post in posts:
-		postInfo = {}
-		postInfo['subject'] = post['history'][0]['subject']
-		postInfo['content'] = post['history'][0]['content']
-		postInfo['followUps'] = []
-		for mainFollowUp in post['children']:
-			followUp = {}
-			followUp['mainComment'] = mainFollowUp['subject']
-			followUp['subComments'] = []
-			for subComment in mainFollowUp['children']:
-				followUp['subComments'].append(subComment['subject'])
-			postInfo['followUps'].append(followUp)
-		neededInfo.append(postInfo)
-	return neededInfo
+	classesInfo = []
+	for c in classes:
+		classInfo = {}
+		classInfo['name'] = c['name']
+		classInfo['number'] = c['num']
+		curClass = p.network(c['nid'])
+		posts = curClass.iter_all_posts(limit = 5)
+		neededInfo = []
+		try:
+			for post in posts:
+				postInfo = {}
+				postInfo['subject'] = post['history'][0]['subject']
+				postInfo['content'] = post['history'][0]['content']
+				postInfo['followUps'] = []
+				for mainFollowUp in post['children']:
+					if 'subject' in mainFollowUp:
+						followUp = {}
+						followUp['mainComment'] = mainFollowUp['subject']
+						followUp['subComments'] = []
+						for subComment in mainFollowUp['children']:
+							followUp['subComments'].append(subComment['subject'])
+						postInfo['followUps'].append(followUp)
+				neededInfo.append(postInfo)
+			classInfo['posts'] = neededInfo
+			classesInfo.append(classInfo)
+		except:
+			print("too fast!")
+
+	return classesInfo
+	
 
 # for post in neededInfo:
 # 	print('Post Title: {0}'.format(post['subject']))

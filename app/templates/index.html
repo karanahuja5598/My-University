@@ -19,10 +19,14 @@
                             <a href="/fetchPiazza"><button>Fetch Piazza Info</button></a>
                         {% endif %}
                         <h1>Piazza Info</h1>
-                        {% for post in unraveled['Piazza'] %}
-                            <h3>Post Title: {{ post['subject']|safe }}</h3>
-                            <h4>Post Content:</h4>
-                            {{ post['content']|safe }}
+                        {% for c in unraveled['Piazza'] %}
+                            <h3>Course Name: {{ c['name']|safe }}</h3>
+                            <h4>Course Number: {{ c['number']|safe }}</h3>
+                            {% for post in c['posts'] %}
+                                <p><strong>Post Title: {{ post['subject']|safe }}</strong></p>
+                                <p><strong>Post Content:</strong></p>
+                                {{ post['content']|safe }}
+                            {% endfor %}
                         {% endfor %}
                     {% else %}
                         <p>No info found for Piazza. Try updating login info or refresh</p>
