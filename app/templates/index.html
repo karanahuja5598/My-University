@@ -1,54 +1,79 @@
 {% extends "base.html" %}
 
+<!--This is the template for our home page-->
 {% block content %}
     <div class="container-fluid">
+
+    <!--If we're logged in, we display this:-->
     {% if loggedIn %}
+
+            <!--Our first row, with a greeting and our refresh/update links-->
             <div class="row">
                 <div class="col-md-12">
                     <h1>Welcome to the UIC School Notifier, {{ user['username'] }}</h1>
                     <a href="/index"><button>Refresh Page</button></a>
                     <a href="/update"><button>Update School Sites Login Info</button></a>
+                    <br><br>
                 </div>
             </div>
 
+            <!--Our second row, with all the content-->
             <div class="row">
 
+                <!--This column is for piazza information-->
                 <div class=col-md-4>
+                    <!--If there is data from piazza to display, we do this:-->
                     {% if hasData['Piazza'] %}
+                        <!--If data can be fetched from piazza, display this button:-->
                         {% if canFetch['Piazza'] %}
                             <a href="/fetchPiazza"><button>Fetch Piazza Info</button></a>
                         {% endif %}
+                        <!--Display our piazza information-->
                         <h1>Piazza Info</h1>
+                        <!--Iterate through each course c-->
                         {% for c in unraveled['Piazza'] %}
+                            <!--Display the course name and number-->
                             <h3>Course Name: {{ c['name']|safe }}</h3>
                             <h4>Course Number: {{ c['number']|safe }}</h3>
+                            <!--Iterate through each post in the course available-->
                             {% for post in c['posts'] %}
+                                <!--Display the post title and content-->
                                 <p><strong>Post Title: {{ post['subject']|safe }}</strong></p>
                                 <p><strong>Post Content:</strong></p>
                                 {{ post['content']|safe }}
                             {% endfor %}
                         {% endfor %}
+                    <!--If there isn't data from piazza to display, do this:-->
                     {% else %}
+                        <!--Mention that there's no info found yet-->
                         <p>No info found for Piazza. Try updating login info or refresh</p>
+                        <!--If data can be fetched from piazza, display this button:-->
                         {% if canFetch['Piazza'] %}
                             <a href="/fetchPiazza"><button>Fetch Piazza Info</button></a>
                         {% endif %}
                     {% endif %}
                 </div>
 
+                <!--This column is for gradescope nformation-->
                 <div class=col-md-4>
+                    <!--If there is data from gradescope to display, we do this:-->
                     {% if hasData['Gradescope'] %}
+                        <!--If data can be fetched from gradescope, display this button:-->
                         {% if canFetch['Gradescope'] %}
                             <a href="/fetchGradescope"><button>Fetch Gradescope Info</button></a>
                         {% endif %}
+                        <!--display each course's information-->
                         <h1>Gradescope Info</h1>
                         {% for post in unraveled['Gradescope'] %}
                             <h3>Course Name: {{ post['subject']|safe }}</h3>
                             <h4>Assignments:</h4>
                             {{ post['content']|safe }}
                         {% endfor %}
+                    <!--If there isn't data from gradescope to display, do this:-->
                     {% else %}
+                        <!--Mention that there's no info found yet-->
                         <p>No info found for Gradescope. Try updating login info or refresh</p>
+                        <!--If data can be fetched from gradescope, display this button:-->
                         {% if canFetch['Gradescope'] %}
                             <a href="/fetchGradescope"><button>Fetch Gradescope Info</button></a>
                         {% endif %}
@@ -57,9 +82,11 @@
                 
                 <div class=col-md-4>
                     {% if hasData['Blackboard'] %}
+                        <!--If data can be fetched from blackboard, display this button:-->
                         {% if canFetch['Blackboard'] %}
                             <a href="/fetchBlackboard"><button>Fetch Blackboard Info</button></a>
                         {% endif %}
+                        <!--Display the whole stream-->
                         <h1>Blackboard Info</h1>
                         {% for post in unraveled['Blackboard'] %}
                             <h3>Notification:</h3>
@@ -68,8 +95,11 @@
                             {% endfor %}
                             <br><br><br>
                         {% endfor %}
+                    <!--If there isn't data from blackboard to display, do this:-->
                     {% else %}
+                        <!--Mention that there's no info found yet-->
                         <p>No info found for Blackboard. Try updating login info or refresh</p>
+                        <!--If data can be fetched from blackboard, display this button:-->
                         {% if canFetch['Blackboard'] %}
                             <a href="/fetchBlackboard"><button>Fetch Blackboard Info</button></a>
                         {% endif %}
@@ -77,6 +107,8 @@
                 </div>
 
             </div>
+
+    <!--If we're not logged in, we display this:-->
     {% else %}
         <div class="row">
             <div class="col-md-12">
