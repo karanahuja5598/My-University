@@ -7,7 +7,7 @@
 #   pip3 install BeautifulSoup4
 #   pip3 install lxml
 
-# function that gets us the information we need from piazza
+# function that gets us the information we need from gradescope
 def getGradescopeInfo(username, password):
 
     # we will need a web scraper to do this, since there is no API
