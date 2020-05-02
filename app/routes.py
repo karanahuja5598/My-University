@@ -43,9 +43,63 @@ async def index():
     #temp = getGradescopeInfo("blahblah@uic.edu","blahblah")
     #temp = getBlackboardInfo("blorg10@uic.edu", "blargaoe")
     if("user" in session):
-        if("username-Piazza" in session["user"] and session["user"]["username-Piazza"] != ""):
-            return await render_template('index.html', title='Home', loggedIn = True, piazza = True, user = session["user"])
-        return await render_template('index.html', title='Home', loggedIn = True, user = session["user"])
+        canFetch = {"Piazza" : False, "Gradescope" : False, "Blackboard" : False}
+        for selector in canFetch:
+            if(("username-"+selector) in session["user"] and session["user"]["username-"+selector] != ""):
+                canFetch[selector] = True
+            """ for selector in canFetch:
+            if(canFetch[selector]):
+            userDB = mongo.cx["userDB"]
+            userCollection = userDB["userCollection"]
+            user = userCollection.find_one({ "username" : session["user"]["username"] })
+            session["user"]["data-"+selector] = user["data-"+selector] """
+            """ fetch = Thread(
+                target=infoRunner,
+                args = (
+                    selector, 
+                    session["user"]["username"], 
+                    session["user"]["username-"+selector], 
+                    session["user"]["password-"+selector]
+                )
+            )
+            fetch.start() """
+        userDB = mongo.cx["userDB"]
+        userCollection = userDB["userCollection"]
+        user = userCollection.find_one({ "username" : session["user"]["username"] })
+        userInfo = {}
+        userInfo["username"] = user["username"]
+        userInfo["username-Piazza"] = user["username-Piazza"]
+        userInfo["password-Piazza"] = user["password-Piazza"]
+        userInfo["data-Piazza"] = user["data-Piazza"]
+        userInfo["username-Gradescope"] = user["username-Gradescope"]
+        userInfo["password-Gradescope"] = user["password-Gradescope"]
+        userInfo["data-Gradescope"] = user["data-Gradescope"]
+        userInfo["username-Blackboard"] = user["username-Blackboard"]
+        userInfo["password-Blackboard"] = user["password-Blackboard"]
+        userInfo["data-Blackboard"] = user["data-Blackboard"]
+        session["user"] = userInfo
+        hasData = {"Piazza" : False, "Gradescope" : False, "Blackboard" : False}
+        unraveledData = {"Piazza" : [], "Gradescope" : [], "Blackboard" : []}
+        for selector in unraveledData:
+            if(("data-"+selector) in session["user"] and session["user"]["data-"+selector] != ""):
+                hasData[selector] = True
+                unraveledData[selector] = json.loads(session["user"]["data-"+selector])
+        """ print("canFetch:")
+        print(canFetch)
+        print("hasdata:")
+        print(hasData)
+        print("session[user]")
+        print(session["user"])
+        print("unraveledData")
+        print(unraveledData) """
+        return await render_template(
+            'index.html', 
+            title='Home', 
+            loggedIn = True, 
+            canFetch = canFetch,
+            hasData = hasData, 
+            user = session["user"], 
+            unraveled = unraveledData)
     return await render_template('index.html', title='Home')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -65,13 +119,22 @@ async def login():
         userInfo["username"] = user["username"]
         userInfo["username-Piazza"] = user["username-Piazza"]
         userInfo["password-Piazza"] = user["password-Piazza"]
+        userInfo["data-Piazza"] = user["data-Piazza"]
         userInfo["username-Gradescope"] = user["username-Gradescope"]
         userInfo["password-Gradescope"] = user["password-Gradescope"]
+        userInfo["data-Gradescope"] = user["data-Gradescope"]
         userInfo["username-Blackboard"] = user["username-Blackboard"]
         userInfo["password-Blackboard"] = user["password-Blackboard"]
+        userInfo["data-Blackboard"] = user["data-Blackboard"]
         session["user"] = userInfo
         return redirect(url_for('index'))
     return await render_template('login.html', title='Sign In', form=form)
+
+@app.route('/logout', methods=['GET', 'POST'])
+async def logout():
+    if("user" in session):
+        session.pop("user")
+    return redirect(url_for('index'))
 
 @app.route('/register', methods=['GET', 'POST'])
 async def register():
@@ -84,9 +147,9 @@ async def register():
             return redirect(url_for('register'))
         userCollection.insert_one(
             { "username" : form.username.data, "password" : form.password.data, 
-                "username-Piazza" : "", "password-Piazza" : "",
-                "username-Gradescope" : "", "password-Gradescope" : "",
-                "username-Blackboard" : "", "password-Blackboard" : ""})
+                "username-Piazza" : "", "password-Piazza" : "", "data-Piazza" : "",
+                "username-Gradescope" : "", "password-Gradescope" : "", "data-Gradescope" : "",
+                "username-Blackboard" : "", "password-Blackboard" : "", "data-Blackboard" : "",})
         await flash("You are registered")
         return redirect(url_for('login'))
     return await render_template('register.html', title='Register', form=form)
@@ -111,20 +174,93 @@ async def update():
         user = userCollection.find_one({ "username" : session["user"]["username"] })
         userInfo = {}
         userInfo["username"] = user["username"]
-        userInfo["username-"+selector] = user["username-"+selector]
-        userInfo["password-"+selector] = user["password-"+selector]
+        userInfo["username-Piazza"] = user["username-Piazza"]
+        userInfo["password-Piazza"] = user["password-Piazza"]
+        userInfo["data-Piazza"] = user["data-Piazza"]
+        userInfo["username-Gradescope"] = user["username-Gradescope"]
+        userInfo["password-Gradescope"] = user["password-Gradescope"]
+        userInfo["data-Gradescope"] = user["data-Gradescope"]
+        userInfo["username-Blackboard"] = user["username-Blackboard"]
+        userInfo["password-Blackboard"] = user["password-Blackboard"]
+        userInfo["data-Blackboard"] = user["data-Blackboard"]
         session["user"] = userInfo
         await flash("Updated info for " + selector)
         #task = []
         #task = task.append(0)
         #task = asyncio.ensure_future(infoRunner(selector, userInfo["username"], userInfo["username-"+selector], userInfo["password-"+selector] ))
-        thread = Thread(
-            target=infoRunner,
-            args = (selector, userInfo["username"], userInfo["username-"+selector], userInfo["password-"+selector]))
-        thread.start()
+        #thread = Thread(
+        #    target=infoRunner,
+        #    args = (selector, userInfo["username"], userInfo["username-"+selector], userInfo["password-"+selector]))
+        #thread.start()
         return redirect(url_for('index'))
     return await render_template('update.html', title='Update', form=form)
 
+
+""" @app.route('/refreshContents', methods=['GET', 'POST'])
+async def refreshContents():
+    userDB = mongo.cx["userDB"]
+    userCollection = userDB["userCollection"]
+    user = userCollection.find_one({ "username" : session["user"]["username"] })
+    userInfo = {}
+    userInfo["username"] = user["username"]
+    userInfo["username-Piazza"] = user["username-Piazza"]
+    userInfo["password-Piazza"] = user["password-Piazza"]
+    userInfo["data-Piazza"] = user["data-Piazza"]
+    userInfo["username-Gradescope"] = user["username-Gradescope"]
+    userInfo["password-Gradescope"] = user["password-Gradescope"]
+    userInfo["data-Gradescope"] = user["data-Gradescope"]
+    userInfo["username-Blackboard"] = user["username-Blackboard"]
+    userInfo["password-Blackboard"] = user["password-Blackboard"]
+    userInfo["data-Blackboard"] = user["data-Blackboard"]
+    session["user"] = userInfo
+    print("refreshcontents")
+    print(session["user"])
+    return redirect(url_for('index')) """
+
+@app.route('/fetchPiazza', methods=['GET', 'POST'])
+async def fetchPiazza():
+    selector = "Piazza"
+    fetch = Thread(
+        target=infoRunner,
+        args = (
+            selector, 
+            session["user"]["username"], 
+            session["user"]["username-"+selector], 
+            session["user"]["password-"+selector]
+        )
+    )
+    fetch.start()
+    return redirect(url_for('index'))
+
+@app.route('/fetchGradescope', methods=['GET', 'POST'])
+async def fetchGradescope():
+    selector = "Gradescope"
+    fetch = Thread(
+        target=infoRunner,
+        args = (
+            selector, 
+            session["user"]["username"], 
+            session["user"]["username-"+selector], 
+            session["user"]["password-"+selector]
+        )
+    )
+    fetch.start()
+    return redirect(url_for('index'))
+
+@app.route('/fetchBlackboard', methods=['GET', 'POST'])
+async def fetchBlackboard():
+    selector = "Blackboard"
+    fetch = Thread(
+        target=infoRunner,
+        args = (
+            selector, 
+            session["user"]["username"], 
+            session["user"]["username-"+selector], 
+            session["user"]["password-"+selector]
+        )
+    )
+    fetch.start()
+    return redirect(url_for('index'))
 
 
 @app.route('/registerPiazza', methods=['GET', 'POST'])

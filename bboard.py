@@ -20,7 +20,8 @@ import pandas as pd
 import time
 
 
-async def getBlackboardInfo(username, password):
+#async def getBlackboardInfo(username, password):
+def getBlackboardInfo(username, password):
     EMAIL = username
     PASSWORD = password
 

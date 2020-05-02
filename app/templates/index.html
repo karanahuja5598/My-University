@@ -1,13 +1,84 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <div class="container-fluid">
     {% if loggedIn %}
-        <h1>Welcome to the UIC School Notifier, {{ user['username'] }}</h1>
-        <a href="/piazza"><button>See Piazza Posts</button></a>
-        <a href="/registerPiazza"><button>Register Piazza Info</button></a>
-        <a href="/gradescope"><button>See Gradescope Assignments</button></a>
-        <a href="/registerGradescope"><button>Register Gradescope Info</button></a>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>Welcome to the UIC School Notifier, {{ user['username'] }}</h1>
+                    <a href="/index"><button>Refresh Page</button></a>
+                    <a href="/update"><button>Update School Sites Login Info</button></a>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class=col-md-4>
+                    {% if hasData['Piazza'] %}
+                        {% if canFetch['Piazza'] %}
+                            <a href="/fetchPiazza"><button>Fetch Piazza Info</button></a>
+                        {% endif %}
+                        <h1>Piazza Info</h1>
+                        {% for post in unraveled['Piazza'] %}
+                            <h3>Post Title: {{ post['subject']|safe }}</h3>
+                            <h4>Post Content:</h4>
+                            {{ post['content']|safe }}
+                        {% endfor %}
+                    {% else %}
+                        <p>No info found for Piazza. Try updating login info or refresh</p>
+                        {% if canFetch['Piazza'] %}
+                            <a href="/fetchPiazza"><button>Fetch Piazza Info</button></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <div class=col-md-4>
+                    {% if hasData['Gradescope'] %}
+                        {% if canFetch['Gradescope'] %}
+                            <a href="/fetchGradescope"><button>Fetch Gradescope Info</button></a>
+                        {% endif %}
+                        <h1>Gradescope Info</h1>
+                        {% for post in unraveled['Gradescope'] %}
+                            <h3>Course Name: {{ post['subject']|safe }}</h3>
+                            <h4>Assignments:</h4>
+                            {{ post['content']|safe }}
+                        {% endfor %}
+                    {% else %}
+                        <p>No info found for Gradescope. Try updating login info or refresh</p>
+                        {% if canFetch['Gradescope'] %}
+                            <a href="/fetchGradescope"><button>Fetch Gradescope Info</button></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                
+                <div class=col-md-4>
+                    {% if hasData['Blackboard'] %}
+                        {% if canFetch['Blackboard'] %}
+                            <a href="/fetchBlackboard"><button>Fetch Blackboard Info</button></a>
+                        {% endif %}
+                        <h1>Blackboard Info</h1>
+                        {% for post in unraveled['Blackboard'] %}
+                            <h3>Notification:</h3>
+                            {% for note in post['content'] %}
+                                <p>{{ note|safe }}</h3>
+                            {% endfor %}
+                            <br><br><br>
+                        {% endfor %}
+                    {% else %}
+                        <p>No info found for Blackboard. Try updating login info or refresh</p>
+                        {% if canFetch['Blackboard'] %}
+                            <a href="/fetchBlackboard"><button>Fetch Blackboard Info</button></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+            </div>
     {% else %}
-        <h1> Welcome to the UIC School Notifier, please log in or register.</h1>
+        <div class="row">
+            <div class="col-md-12">
+                <h1> Welcome to the UIC School Notifier, please log in or register.</h1>
+            </div>
+        </div>
     {% endif %}
+    </div>
 {% endblock %}

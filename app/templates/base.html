@@ -1,12 +1,14 @@
 <html>
     <head>
         <title>UIC Notifier</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/bootstrap.min.css') }}">
     </head>
     <body>
         <div>
             Table of Contents:
             <a href="{{ url_for('index') }}">Home</a>
             <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
             <a href="{{ url_for('register') }}">Register</a>
         </div>
 
@@ -21,5 +23,7 @@
         {% endwith %}
 
         {% block content %}{% endblock %}
+
+        <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
     </body>
 </html>
