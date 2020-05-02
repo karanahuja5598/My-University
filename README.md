@@ -67,7 +67,7 @@ We are not specialized students.
 # Installation
 
 To spin up our app, first run (docker-compose up --build -d) on the terminal and then go to (localhost:5000) to see the app.
-Then to turn off the container, run the command docker-compose down.
+Then to turn off the container, run the command (docker-compose down).
 
 To run the test cases, first run (docker-compose up --build -d) on the terminal and then run the commmand (docker exec my_uni python -m unittest discover) to see the test cases run. After that to turn off the container, run the command 
 (docker-compose down).
