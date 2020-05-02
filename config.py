@@ -6,4 +6,5 @@ class Config(object):
     # the mongo uri to connect from within the docker container
     MONGO_URI = 'mongodb://mongodb:27017/'
 
+    # this was causing issues with our scraper, so we disabled it
     WTF_CSRF_ENABLED = False
