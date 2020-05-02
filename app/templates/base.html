@@ -1,9 +1,13 @@
 <html>
+    <!--This is our base template for all of the web pages in the app-->
     <head>
         <title>UIC Notifier</title>
+        <!--Fetch our boostrap css theme-->
         <link rel="stylesheet" href="{{ url_for('static', filename = 'css/bootstrap.min.css') }}">
     </head>
     <body>
+
+        <!--This is our table of contents for the site-->
         <div>
             Table of Contents:
             <a href="{{ url_for('index') }}">Home</a>
@@ -12,6 +16,7 @@
             <a href="{{ url_for('register') }}">Register</a>
         </div>
 
+        <!--If we ever get a flashed message, we display it here-->
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <ul>
@@ -22,8 +27,10 @@
             {% endif %}
         {% endwith %}
 
+        <!--This is where each page adds in its custom content-->
         {% block content %}{% endblock %}
 
+        <!--Fetch boostrap itself-->
         <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
     </body>
 </html>
