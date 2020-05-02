@@ -2,21 +2,15 @@
 
 University of Illinois School Notifier
 
-Note: The test descriptions can be found under test/integration.js
+Note: The test descriptions can be found under app/test_app.py
 
 ## Description
 
 Students often have to reach out to many different sources to get information about their assignments,
 lecture notes, and instructor assignments. It can be hard keeping track of all of this information from
 multiple different sources. The goal of this app is to attempt to provide a single point of access
-for all of your notification needs. This app will gather information from Blackboard and Piazza initially,
-and if feasible will try to expand to also include Gradescope. <br />
-
-It will also have a calendar, allowing you to see notifications in the order that they appear.
-If available, it will access grading info so that you can see how you are faring in each of your classes.
-We will also make it so that you can add your own notifications and notes.
-This application will hopefully allow you to gather all the information you need for your day-to-day
-school activities.
+for all of your notification needs. This app will gather information from Gradescope and Piazza initially,
+and if feasible will try to expand to also include Blackboard. <br />
 
 ## Authors
 
@@ -61,7 +55,6 @@ school activities.
   - Will establish a fully implemented scraper for Blackboard
   - Have a fully completed test suite for the app
   - Make the app more appealing by adding templates that make it more colorful
-  - Try to deploy it to an actual site rather than running the container each time
 - Final Test List located in app/test_app.py
   - The tests will be more focused towards Blackboard as that is the last thing that is left to be implemented
   - The first test will be testing if the credentials for logging in to Blackboard work properly, this test case is called     test_register_blackboard_auth
@@ -73,7 +66,8 @@ We are not specialized students.
 
 # Installation
 
-To spin up our app, first run (docker-compose up --build) on the terminal and then go to (localhost:5000) to see the app.
+To spin up our app, first run (docker-compose up --build -d) on the terminal and then go to (localhost:5000) to see the app.
+Then to turn off the container, run the command docker-compose down.
 
-To run the test cases, first run (docker-compose up --build) on one terminal window and then on another terminal window run 
-(docker exec my_uni python -m unittest discover) to see the test cases run.
+To run the test cases, first run (docker-compose up --build -d) on the terminal and then run the commmand (docker exec my_uni python -m unittest discover) to see the test cases run. After that to turn off the container, run the command 
+(docker-compose down).
